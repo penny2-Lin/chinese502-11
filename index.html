@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>森林之心的守護與覺醒</title>
+    <style>
+        :root {
+            --primary-color: #1b5e20; /* 森林綠 */
+            --secondary-color: #f1f8e9; /* 淺草綠背景 */
+            --accent-color: #ff8f00; /* 火焰橘 */
+            --text-color: #263238;
+            --blue-hole: #0288d1; /* 挖空藍 */
+            --correct-color: #2e7d32; /* 正確綠 */
+            --wrong-color: #d32f2f; /* 錯誤紅 */
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 900px;
+            background: white;
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border: 2px solid #e8f5e9;
+        }
+
+        /* 標題與圖示整合區塊 */
+        .illustration {
+            width: 100%;
+            min-height: 140px;
+            background: linear-gradient(135deg, #1b5e20 0%, #4caf50 100%);
+            margin-bottom: 30px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            gap: 20px;
+            box-shadow: 0 6px 20px rgba(27, 94, 32, 0.2);
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .illustration h1 {
+            color: white;
+            text-align: center;
+            font-size: 2.2rem;
+            margin: 0;
+            padding: 0;
+            border-bottom: none;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            white-space: nowrap;
+            z-index: 2;
+        }
+
+        .character {
+            font-size: 55px;
+            animation: moveAround 4s infinite ease-in-out;
+            display: inline-block;
+            z-index: 2;
+        }
+
+        @keyframes moveAround {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+
+        .story-content {
+            line-height: 2.5;
+            font-size: 1.15rem;
+            text-align: justify;
+            margin-bottom: 40px;
+            background: #fafafa;
+            padding: 30px;
+            border-radius: 20px;
+            border-left: 8px solid var(--primary-color);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.02);
+        }
+
+        /* 基礎空格樣式 */
+        .blank {
+            display: inline-block;
+            min-width: 95px;
+            border-bottom: 2px solid var(--blue-hole);
+            color: var(--blue-hole);
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            padding: 0 8px;
+            margin: 0 4px;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        /* 答對樣式 */
+        .blank.correct { 
+            color: var(--correct-color); 
+            border-bottom: 2px solid transparent; 
+            text-decoration: none !important;
+        }
+
+        /* 答錯樣式：紅色、刪除線、保留底線 */
+        .blank.wrong { 
+            color: var(--wrong-color) !important; 
+            border-bottom: 2px solid var(--wrong-color) !important; 
+            text-decoration: line-through !important;
+            text-decoration-color: var(--wrong-color);
+            text-decoration-thickness: 2px;
+        }
+
+        .word-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            background: #e8f5e9;
+            padding: 25px;
+            border-radius: 18px;
+            margin-bottom: 30px;
+            border: 2px dashed #a5d6a7;
+        }
+
+        .word-item {
+            background: white;
+            border: 2px solid var(--primary-color);
+            padding: 8px 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .word-item:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .word-item.selected {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            color: white;
+        }
+
+        .word-item.used {
+            opacity: 0.3;
+            cursor: default;
+            pointer-events: none;
+            background: #cfd8dc;
+            border-color: #b0bec5;
+            color: #78909c;
+        }
+
+        .detail-panel {
+            background: #fff9db;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 6px solid #f9a825;
+            display: none;
+            animation: slideIn 0.4s;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .detail-title {
+            font-weight: bold;
+            color: #ef6c00;
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+        }
+
+        .controls {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px 45px;
+            font-size: 1.2rem;
+            border-radius: 35px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(27, 94, 32, 0.3);
+        }
+
+        button:hover {
+            background: #1b5e20;
+            transform: scale(1.05);
+        }
+
+        .feedback-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 0 70px rgba(0,0,0,0.4);
+            z-index: 100;
+            text-align: center;
+            display: none;
+            min-width: 380px;
+        }
+
+        .overlay {
+            position: fixed;
+            top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 90;
+        }
+
+        @media (max-width: 650px) {
+            .illustration {
+                flex-direction: column;
+                padding: 25px 15px;
+            }
+            .illustration h1 {
+                font-size: 1.6rem;
+                white-space: normal;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 整合標題與圖示的 Banner -->
+        <div class="illustration">
+            <span class="character">🌲</span>
+            <h1>森林之心的守護與覺醒</h1>
+            <span class="character">🔥</span>
+        </div>
+
+        <!-- 詞語自學區 -->
+        <div id="detailPanel" class="detail-panel">
+            <div id="detailTitle" class="detail-title">詞語小百科</div>
+            <div id="detailContent"></div>
+        </div>
+
+        <!-- 詞庫區 -->
+        <div class="word-bank" id="wordBank">
+            <!-- 由 JS 動態生成 -->
+        </div>
+
+        <!-- 文章內容 -->
+        <div class="story-content" id="storyContent">
+            在世界盡頭的守護森林裡，有一道清澈如銀帶的<span class="blank" data-answer="瀑布"></span>，從懸崖峭壁奔騰而下。每當午後陽光從樹葉縫隙間<span class="blank" data-answer="流瀉"></span>進來，整座森林就像被神聖的光芒所<span class="blank" data-answer="籠罩"></span>。這裡是萬物的避風港，也是整座森林的<span class="blank" data-answer="靈魂"></span>所在。
+            <br><br>
+            傳說中，守護森林有一條古老的<span class="blank" data-answer="規定"></span>：任何人不得取走森林裡的一草一木。然而，鄰國的國王生性<span class="blank" data-answer="貪婪"></span>，他不顧大臣的勸阻，執意帶兵闖入，想要奪取傳說中的「森林之心」。當國王踏入禁區，行為徹底<span class="blank" data-answer="違反"></span>了自然界的平衡，天空瞬間烏雲密布，四周陷入一片死寂，彷彿要把所有生命都給<span class="blank" data-answer="吞噬"></span>。
+            <br><br>
+            國王看著原本茂密的叢林逐漸枯萎，小鳥不再在枝頭安靜地<span class="blank" data-answer="啄食"></span>，心中竟沒來由地感到一陣<span class="blank" data-answer="心疼"></span>。這時，一道巨大的雷聲響起，大地開始震動，森林守護者因為國王的傲慢而<span class="blank" data-answer="大發雷霆"></span>。強烈的震懾讓國王嚇得渾身<span class="blank" data-answer="發抖"></span>，甚至不敢直視前方的威壓。
+            <br><br>
+            突然，一隻全身閃爍著<span class="blank" data-answer="火焰"></span>光彩的巨鳥從天際<span class="blank" data-answer="俯衝"></span>而下，停在國王面前。這神聖的一幕讓國王終於明白自己的錯誤。他退出了森林，從此致力於環境的保育。這場冒險，讓他在知足中找到了心靈的真自由。
+        </div>
+
+        <div class="controls">
+            <button onclick="checkAnswers()">核對答案，守護森林</button>
+            <button onclick="resetGame()" style="background:#90a4ae; margin-left:10px; box-shadow:none;">重新開始</button>
+        </div>
+    </div>
+
+    <!-- 彈窗與遮罩 -->
+    <div class="overlay" id="overlay"></div>
+    <div class="feedback-modal" id="feedbackModal">
+        <h2 id="feedbackTitle">結算報告</h2>
+        <p id="feedbackText"></p>
+        <button onclick="closeModal()">繼續精進</button>
+    </div>
+
+    <script>
+        const vocabulary = {
+            "貪婪": { def: "過度索求而無節制，不知足。", ex: "貪婪的人很難有滿足的時候。" },
+            "發抖": { def: "身體因寒冷、恐懼或憤怒而顫抖。", ex: "屋內寒氣凝結，令人凍得直發抖。" },
+            "心疼": { def: "憐惜、捨不得。", ex: "爸爸珍藏的瓷器摔破了，讓他十分心疼。" },
+            "靈魂": { def: "心靈、精神核心，或指主要的關鍵人物。", ex: "他是班上的靈魂人物，總是能帶動氣氛。" },
+            "規定": { def: "泛稱各種規章的約束，或制定準則。", ex: "參賽前必須詳細閱讀這次活動的規定。" },
+            "違反": { def: "違背、不遵守。", ex: "他因為違反校規而被處分。" },
+            "瀑布": { def: "從高處直瀉而下的水流。", ex: "遠遠望去，瀑布好似一條白色絲巾懸掛在山崖前。" },
+            "流瀉": { def: "流散、傾瀉（常用於光影或水流）。", ex: "她拉開窗簾，讓屋內流瀉著輕柔的月光。" },
+            "吞噬": { def: "侵略兼併，或指消滅、覆蓋的現象。", ex: "整艘船最終都被大海吞噬了。" },
+            "籠罩": { def: "由四面八方加以覆蓋。", ex: "大霧籠罩了整個山頭，看不清遠方的路。" },
+            "火焰": { def: "燃燒時發出的光焰。", ex: "營火的火焰照亮了漆黑的森林。" },
+            "大發雷霆": { def: "比喻發怒，大聲責罵。", ex: "看到孩子說謊，媽媽氣得大發雷霆。" },
+            "俯衝": { def: "飛鳥或飛行物從空中迅速飛降。", ex: "老鷹一發現獵物，立即俯衝而下。" },
+            "啄食": { def: "禽類動物用嘴取食。", ex: "小雞在泥地上忙著啄食蚯蚓。" }
+        };
+
+        let selectedWord = null;
+
+        function init() {
+            const wordBank = document.getElementById('wordBank');
+            const words = Object.keys(vocabulary);
+            const shuffled = words.sort(() => Math.random() - 0.5);
+            
+            shuffled.forEach(word => {
+                const div = document.createElement('div');
+                div.className = 'word-item';
+                div.innerText = word;
+                div.onclick = () => selectWord(word, div);
+                wordBank.appendChild(div);
+            });
+
+            const blanks = document.querySelectorAll('.blank');
+            blanks.forEach(blank => {
+                blank.onclick = () => fillBlank(blank);
+            });
+        }
+
+        function selectWord(word, element) {
+            document.querySelectorAll('.word-item').forEach(el => el.classList.remove('selected'));
+            
+            const panel = document.getElementById('detailPanel');
+            const content = document.getElementById('detailContent');
+            const title = document.getElementById('detailTitle');
+            
+            panel.style.display = 'block';
+            title.innerText = `💡 詞語小百科：${word}`;
+            content.innerHTML = `<p><strong>【意思】</strong>${vocabulary[word].def}</p><p><strong>【例句】</strong>${vocabulary[word].ex}</p>`;
+
+            selectedWord = word;
+            element.classList.add('selected');
+        }
+
+        function fillBlank(blank) {
+            blank.classList.remove('correct', 'wrong');
+
+            if (!selectedWord) {
+                if (blank.innerText) {
+                    const currentWord = blank.innerText;
+                    selectWord(currentWord, findWordItem(currentWord));
+                }
+                return;
+            }
+
+            if (blank.innerText) {
+                const oldWord = blank.innerText;
+                const oldItem = findWordItem(oldWord);
+                if (oldItem) oldItem.classList.remove('used');
+            }
+
+            blank.innerText = selectedWord;
+            
+            const selectedItem = document.querySelector('.word-item.selected');
+            if (selectedItem) selectedItem.classList.add('used');
+
+            selectedWord = null;
+            document.querySelectorAll('.word-item').forEach(el => el.classList.remove('selected'));
+        }
+
+        function findWordItem(word) {
+            return Array.from(document.querySelectorAll('.word-item')).find(el => el.innerText === word);
+        }
+
+        function checkAnswers() {
+            const blanks = document.querySelectorAll('.blank');
+            let correctCount = 0;
+
+            blanks.forEach(blank => {
+                const answer = blank.getAttribute('data-answer');
+                const userVal = blank.innerText;
+
+                blank.classList.remove('correct', 'wrong');
+
+                if (userVal === answer) {
+                    blank.classList.add('correct');
+                    correctCount++;
+                } else if (userVal) {
+                    blank.classList.add('wrong');
+                }
+            });
+
+            const modal = document.getElementById('feedbackModal');
+            const overlay = document.getElementById('overlay');
+            const title = document.getElementById('feedbackTitle');
+            const text = document.getElementById('feedbackText');
+
+            modal.style.display = 'block';
+            overlay.style.display = 'block';
+
+            if (correctCount === blanks.length) {
+                title.innerText = "🍃 守護者達成！";
+                text.innerText = "你真棒！森林之心感受到了你的智慧，所有的詞語都正確歸位了！";
+            } else {
+                title.innerText = "⛈️ 森林迷霧中";
+                text.innerText = `你填對了 ${correctCount} 個詞語。紅色刪除線代表該詞語不符合語境，請再次查閱百科並重新思考喔！`;
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('feedbackModal').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        function resetGame() {
+            location.reload();
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
